@@ -33,7 +33,7 @@ columns_of_interest = ['radius', 'texture', 'perimeter', 'area', 'smoothness',
                        'compactness', 'concavity', 'concave points', 'symmetry', 
                        'fractal_dimension']
 # Create side-by-side violin plots
-fig, axes = plt.subplots(nrows=10, ncols=1, figsize=(10, 30))
+fig, axes = plt.subplots(nrows=10, ncols=1, figsize=(10, 20))
 for i, column in enumerate(columns_of_interest):
     # Select columns for '_mean', '_se', and '_worst'
     columns_to_plot = [f"{column}_mean", f"{column}_se", f"{column}_worst"]
@@ -50,7 +50,7 @@ for i, column in enumerate(columns_of_interest):
     axes[i].set_xlabel('Variables')
     axes[i].set_ylabel('Values')
 plt.tight_layout()
-plt.show()
+#plt.show()
 plt.savefig("violin_plot.png")
 
 # Create boxplots to check distribution
@@ -58,7 +58,7 @@ columns_of_interest = ['radius', 'texture', 'perimeter', 'area', 'smoothness',
                        'compactness', 'concavity', 'concave points', 'symmetry', 
                        'fractal_dimension']
 # Create side-by-side boxplots
-fig, axes = plt.subplots(nrows=10, ncols=1, figsize=(10, 30))
+fig, axes = plt.subplots(nrows=10, ncols=1, figsize=(10, 20))
 for i, column in enumerate(columns_of_interest):
     # Select columns for '_mean', '_se', and '_worst'
     columns_to_plot = [f"{column}_mean", f"{column}_se", f"{column}_worst"]    
@@ -72,7 +72,7 @@ for i, column in enumerate(columns_of_interest):
     # Add legend
     axes[i].legend(['Mean', 'SE', 'Worst'], loc='upper right')
 plt.tight_layout()
-plt.show()
+#plt.show()
 plt.savefig("boxplot.png")
 
 # Create histograms to check distribution
@@ -93,7 +93,7 @@ for i, column in enumerate(columns_of_interest):
         axes[row_index, col_index].set_ylabel('Counts')  # Set y-axis label
         axes[row_index, col_index].legend()  # Show legend
 plt.tight_layout()
-plt.show()
+#plt.show()
 plt.savefig('subplots_figure.png')
 
 # Further on, we proceed only with the mean group of the attributes
@@ -121,7 +121,7 @@ sns.barplot(data=barplot_data, x='diagnosis', y='count', palette=colors)
 plt.title('Diagnosis Distribution')
 plt.ylabel('Count')
 plt.xlabel('Diagnosis')
-plt.show()
+#plt.show()
 plt.savefig("diagnosis_barplot.png")
 
 # Create histograms to check distribution stratified on diagnosis
@@ -143,7 +143,7 @@ for j in range(n_vars, num_rows * num_cols):
     fig.delaxes(axes[j])
 # Adjust layout and show plot
 plt.tight_layout()
-plt.show()
+#plt.show()
 plt.savefig("histogram_diagnosis.png")
 
 #Encode diagnosis attribute to a binary to further proceed with our analysis
@@ -152,7 +152,7 @@ new_cancer_data_1['diagnosis'] = new_cancer_data_1['diagnosis'].map(new_cancer_d
 new_cancer_data_1
 
 # Create pairplots of all the numeric attributes stratified on diganosis
-cancer_pairplot = sns.pairplot(new_cancer_data_1, hue='diagnosis')
+cancer_pairplot = sns.pairplot(new_cancer_data_1.iloc[:,1:], hue='diagnosis')
 cancer_pairplot._legend.set_title('Diagnosis')
 cancer_pairplot._legend.set_bbox_to_anchor((1.1, 0.5))  # Adjust the position of the legend
 # Rename the labels
@@ -160,8 +160,8 @@ new_labels = {'0': 'Benign', '1': 'Malignant'}
 for t, l in zip(cancer_pairplot._legend.texts, new_labels.values()):
     t.set_text(l)
     t.set_fontsize(12)
-plt.show()
-plt.savefig(pairplot.png)
+#plt.show()
+plt.savefig("cancer_pairplot.png")
 
 # Create and plot correlation matrix
 correlation_matrix = new_cancer_data_1.iloc[:,2:].corr()
@@ -172,7 +172,7 @@ sns.heatmap(correlation_matrix, annot=True, cmap='viridis', fmt=".0%", linewidth
 plt.title('Correlation Matrix of Numerical Variables')
 # Rotate y-axis labels for better readability
 plt.yticks(rotation=0)
-plt.show()
+#plt.show()
 plt.savefig("correlation_matrix.png")
 
 # Data manipulation before performing PCA
@@ -195,7 +195,7 @@ plt.ylabel('Variance Explained (%)')
 plt.title('Variance Explained by Principal Components')
 plt.xticks(range(1, pca.n_components_ + 1))
 plt.grid(True)
-plt.show()
+#plt.show()
 plt.savefig("variance_explained.png")
 
 # Plot cumulative variance explained by principal components
@@ -209,7 +209,7 @@ plt.xlabel("Principal component")
 plt.ylabel("Variance explained (%)")
 plt.legend(["Individual", "Cumulative", "Threshold"])
 plt.grid()
-plt.show()
+#plt.show()
 plt.savefig("cumulative_variance.png")
 
 # PCA plot  
@@ -220,7 +220,7 @@ plt.ylabel('PC2')
 plt.title('PCA Plot')
 plt.legend(title='Diagnosis')
 plt.grid(True)
-plt.show()
+#plt.show()
 plt.savefig("PCA_plot.png")
 
 # Get information about the principal coefficients
@@ -244,7 +244,7 @@ plt.ylabel("Component coefficients")
 plt.legend()
 plt.grid()
 plt.title("PCA Component Coefficients")
-plt.show()
+#plt.show()
 plt.savefig("projections_first_three.png")
 
 # Plot the covariance matrix (Σ)
@@ -252,5 +252,5 @@ cov_matrix = np.cov(scaled_data, rowvar=False)
 plt.figure(figsize=(10, 8))
 sns.heatmap(cov_matrix, annot=True, fmt=".2f", cmap="coolwarm", square=True)
 plt.title("Covariance Matrix")
-plt.show()
+#plt.show()
 plt.savefig("covariance_matrix.png")
