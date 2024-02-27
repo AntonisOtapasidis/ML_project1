@@ -16,31 +16,32 @@ cancer_data.shape
 cancer_data.columns
 
 # Check for missing values
-cancer_data.isnull().sum()
+print(cancer_data.isnull().sum())
 
 # Drop empty column
 cancer_data = cancer_data.drop(columns= ['Unnamed: 32'])
-cancer_data
+print(cancer_data)
 
 # Check if attributes are of the correct data type
-cancer_data.info()
+print(cancer_data.info())
 
 # Summary statistics
-cancer_data.iloc[:,1:].describe()
+print(cancer_data.iloc[:,1:].describe())
 
 # Create violinplots to check distribution
 columns_of_interest = ['radius', 'texture', 'perimeter', 'area', 'smoothness', 
                        'compactness', 'concavity', 'concave points', 'symmetry', 
                        'fractal_dimension']
 # Create side-by-side violin plots
-fig, axes = plt.subplots(nrows=10, ncols=1, figsize=(10, 20))
+fig, axes = plt.subplots(nrows=10, ncols=1, figsize=(20, 40))  # Increase figsize height for better visualization
+
 for i, column in enumerate(columns_of_interest):
     # Select columns for '_mean', '_se', and '_worst'
     columns_to_plot = [f"{column}_mean", f"{column}_se", f"{column}_worst"]
     # Extract data for each column to plot
     data = [cancer_data[col] for col in columns_to_plot]
-    # Plot the violin plots
-    axes[i].violinplot(data)
+    # Plot the violin plots with adjusted width
+    axes[i].violinplot(data, widths=0.8)  # Adjust width as needed
     # Set x-axis labels
     axes[i].set_xticks(np.arange(1, len(columns_to_plot) + 1))
     axes[i].set_xticklabels(['Mean', 'SE', 'Worst'])
@@ -49,16 +50,18 @@ for i, column in enumerate(columns_of_interest):
     # Set plot labels
     axes[i].set_xlabel('Variables')
     axes[i].set_ylabel('Values')
+
 plt.tight_layout()
-#plt.show()
-plt.savefig("violin_plot.png")
+plt.show()
+
+#plt.savefig("violin_plot.png")
 
 # Create boxplots to check distribution
 columns_of_interest = ['radius', 'texture', 'perimeter', 'area', 'smoothness', 
                        'compactness', 'concavity', 'concave points', 'symmetry', 
                        'fractal_dimension']
 # Create side-by-side boxplots
-fig, axes = plt.subplots(nrows=10, ncols=1, figsize=(10, 20))
+fig, axes = plt.subplots(nrows=10, ncols=1, figsize=(20, 15))
 for i, column in enumerate(columns_of_interest):
     # Select columns for '_mean', '_se', and '_worst'
     columns_to_plot = [f"{column}_mean", f"{column}_se", f"{column}_worst"]    
@@ -72,13 +75,13 @@ for i, column in enumerate(columns_of_interest):
     # Add legend
     axes[i].legend(['Mean', 'SE', 'Worst'], loc='upper right')
 plt.tight_layout()
-#plt.show()
-plt.savefig("boxplot.png")
+plt.show()
+#plt.savefig("boxplot.png")
 
 # Create histograms to check distribution
 num_rows = len(columns_of_interest) // 2 + len(columns_of_interest) % 2
 # Create a figure and axes for subplots
-fig, axes = plt.subplots(nrows=num_rows, ncols=2, figsize=(12, 8))
+fig, axes = plt.subplots(nrows=num_rows, ncols=2, figsize=(15, 12))
 for i, column in enumerate(columns_of_interest):
     # Calculate the row and column indices for the current subplot
     row_index = i // 2
@@ -93,12 +96,12 @@ for i, column in enumerate(columns_of_interest):
         axes[row_index, col_index].set_ylabel('Counts')  # Set y-axis label
         axes[row_index, col_index].legend()  # Show legend
 plt.tight_layout()
-#plt.show()
-plt.savefig('subplots_figure.png')
+plt.show()
+#plt.savefig('subplots_figure.png')
 
 # Further on, we proceed only with the mean group of the attributes
 new_cancer_data = cancer_data.iloc[:, :12] # Also exclude the id attribute
-new_cancer_data
+print(new_cancer_data)
 
 # Exclude the "_mean" string from attributes names since the other groups were dropped
 for col in new_cancer_data.columns:
@@ -111,7 +114,6 @@ for col in new_cancer_data.columns:
 
 # Create a checkpoint
 new_cancer_data_1 = new_cancer_data.copy()
-new_cancer_data_1
 
 # Create a barplot of diagnosis attribute
 diagnosis_counts = new_cancer_data_1['diagnosis'].value_counts()
@@ -121,8 +123,8 @@ sns.barplot(data=barplot_data, x='diagnosis', y='count', palette=colors)
 plt.title('Diagnosis Distribution')
 plt.ylabel('Count')
 plt.xlabel('Diagnosis')
-#plt.show()
-plt.savefig("diagnosis_barplot.png")
+plt.show()
+#plt.savefig("diagnosis_barplot.png")
 
 # Create histograms to check distribution stratified on diagnosis
 numerical_vars = ['radius', 'texture', 'perimeter', 'area', 'smoothness', 'compactness', 'concavity',
@@ -143,13 +145,39 @@ for j in range(n_vars, num_rows * num_cols):
     fig.delaxes(axes[j])
 # Adjust layout and show plot
 plt.tight_layout()
-#plt.show()
-plt.savefig("histogram_diagnosis.png")
+plt.show()
+#plt.savefig("histogram_diagnosis.png")
+
+# Identify the outliers
+# Calculate the number of rows and columns based on the number of variables
+num_rows = (n_vars - 1) // 3 + 1
+num_cols = min(n_vars, 3)
+
+fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, figsize=(20, 15))
+
+# Flatten the axes for easy iteration
+axes = axes.flatten()
+
+# Plot bar plots for each variable
+for i, var in enumerate(numerical_vars):
+    if i >= len(axes):  # Check if all axes have been used
+        break
+    sns.boxplot(data=new_cancer_data_1, x='diagnosis', y=var, ax=axes[i])
+    axes[i].set_xlabel('Diagnosis')  # Set x-axis label
+
+# Hide unused subplots
+for j in range(i+1, len(axes)):
+    fig.delaxes(axes[j])
+
+plt.tight_layout()
+plt.show()
+
+
 
 #Encode diagnosis attribute to a binary to further proceed with our analysis
 new_cancer_diagnosis = {'B': 0, 'M': 1}
 new_cancer_data_1['diagnosis'] = new_cancer_data_1['diagnosis'].map(new_cancer_diagnosis)
-new_cancer_data_1
+print(new_cancer_data_1)
 
 # Create pairplots of all the numeric attributes stratified on diganosis
 cancer_pairplot = sns.pairplot(new_cancer_data_1.iloc[:,1:], hue='diagnosis')
@@ -160,12 +188,11 @@ new_labels = {'0': 'Benign', '1': 'Malignant'}
 for t, l in zip(cancer_pairplot._legend.texts, new_labels.values()):
     t.set_text(l)
     t.set_fontsize(12)
-#plt.show()
-plt.savefig("cancer_pairplot.png")
+plt.show()
+#plt.savefig("cancer_pairplot.png")
 
 # Create and plot correlation matrix
 correlation_matrix = new_cancer_data_1.iloc[:,2:].corr()
-correlation_matrix
 plt.figure(figsize=(10, 8))
 # Generate a heatmap 
 sns.heatmap(correlation_matrix, annot=True, cmap='viridis', fmt=".0%", linewidths=0.5)
@@ -186,7 +213,7 @@ scaled_data = scaler.fit_transform(X) # Transform the data for the PCA
 # Performing the PCA
 pca = PCA() # The PCA function performs Singular Value Decomposition (SVD) internally to perform the dimensionality reduction
 pca_data = pca.fit_transform(scaled_data)
-
+print(pca_data)
 # Plot the variance explained by each principal component
 plt.figure(figsize=(8, 6))
 plt.bar(range(1, pca.n_components_ + 1), pca.explained_variance_ratio_ * 100, alpha=0.7, align='center')
@@ -195,8 +222,8 @@ plt.ylabel('Variance Explained (%)')
 plt.title('Variance Explained by Principal Components')
 plt.xticks(range(1, pca.n_components_ + 1))
 plt.grid(True)
-#plt.show()
-plt.savefig("variance_explained.png")
+plt.show()
+#plt.savefig("variance_explained.png")
 
 # Plot cumulative variance explained by principal components
 threshold = 0.9
@@ -209,8 +236,8 @@ plt.xlabel("Principal component")
 plt.ylabel("Variance explained (%)")
 plt.legend(["Individual", "Cumulative", "Threshold"])
 plt.grid()
-#plt.show()
-plt.savefig("cumulative_variance.png")
+plt.show()
+#plt.savefig("cumulative_variance.png")
 
 # PCA plot  
 plt.figure(figsize=(8, 6))
@@ -220,8 +247,8 @@ plt.ylabel('PC2')
 plt.title('PCA Plot')
 plt.legend(title='Diagnosis')
 plt.grid(True)
-#plt.show()
-plt.savefig("PCA_plot.png")
+plt.show()
+#plt.savefig("PCA_plot.png")
 
 # Get information about the principal coefficients
 pc_df = pd.DataFrame(data=pca_data)
@@ -244,13 +271,13 @@ plt.ylabel("Component coefficients")
 plt.legend()
 plt.grid()
 plt.title("PCA Component Coefficients")
-#plt.show()
-plt.savefig("projections_first_three.png")
+plt.show()
+#plt.savefig("projections_first_three.png")
 
 # Plot the covariance matrix (Σ)
 cov_matrix = np.cov(scaled_data, rowvar=False)
 plt.figure(figsize=(10, 8))
 sns.heatmap(cov_matrix, annot=True, fmt=".2f", cmap="coolwarm", square=True)
 plt.title("Covariance Matrix")
-#plt.show()
-plt.savefig("covariance_matrix.png")
+plt.show()
+#plt.savefig("covariance_matrix.png")
