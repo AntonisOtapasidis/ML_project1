@@ -171,6 +171,7 @@ for j in range(i+1, len(axes)):
 
 plt.tight_layout()
 plt.show()
+#plt.savefig("ouliers_barplot.png")
 
 
 
@@ -199,8 +200,8 @@ sns.heatmap(correlation_matrix, annot=True, cmap='viridis', fmt=".0%", linewidth
 plt.title('Correlation Matrix of Numerical Variables')
 # Rotate y-axis labels for better readability
 plt.yticks(rotation=0)
-#plt.show()
-plt.savefig("correlation_matrix.png")
+plt.show()
+#plt.savefig("correlation_matrix.png")
 
 # Data manipulation before performing PCA
 # Exclusion of the ID (not to be used here) and the diagnosis (attribute to be predicted) 
