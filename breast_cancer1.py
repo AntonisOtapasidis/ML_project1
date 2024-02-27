@@ -173,6 +173,19 @@ plt.tight_layout()
 plt.show()
 #plt.savefig("ouliers_barplot.png")
 
+numerical_vars = ['radius', 'texture', 'perimeter', 'area', 'smoothness', 'compactness', 'concavity',
+                  'concave points', 'symmetry', 'fractal_dimension']
+
+# Create a boxplot for each numerical variable, side by side
+plt.figure(figsize=(20, 10))
+sns.boxplot(data=new_cancer_data_1[numerical_vars], orient="v", palette="Set2")
+plt.xlabel('Variables', fontsize=14)
+plt.ylabel('Values', fontsize=14)
+plt.title('Distribution of Numerical Variables', fontsize=16)
+plt.xticks(rotation=45, fontsize = 8)  # Rotate x-axis labels for better readability
+plt.grid(True)
+plt.show()
+#plt.savefig("ouliers_barplot.png")
 
 
 #Encode diagnosis attribute to a binary to further proceed with our analysis
@@ -199,9 +212,11 @@ plt.figure(figsize=(10, 8))
 sns.heatmap(correlation_matrix, annot=True, cmap='viridis', fmt=".0%", linewidths=0.5)
 plt.title('Correlation Matrix of Numerical Variables')
 # Rotate y-axis labels for better readability
-plt.yticks(rotation=0)
+plt.yticks(rotation=45, fontsize=8)
+plt.xticks(rotation=45, fontsize=8)
+
 plt.show()
-#plt.savefig("correlation_matrix.png")
+plt.savefig("2correlation_matrix.png")
 
 # Data manipulation before performing PCA
 # Exclusion of the ID (not to be used here) and the diagnosis (attribute to be predicted) 
@@ -252,33 +267,41 @@ plt.show()
 #plt.savefig("PCA_plot.png")
 
 # Get information about the principal coefficients
-pc_df = pd.DataFrame(data=pca_data)
-# Display the first few rows of the dataframe
-print(pc_df.head())
+
 
 # Plot the principal directions of the first three principal components
+pc_df2 = pd.DataFrame(data=pca_data, columns=columns_of_interest)
+
+# Check the variance explained by the first three principal components
 pcs = [0, 1, 2]
 legendStrs = ["PC" + str(e + 1) for e in pcs]
 c = ["r", "g", "b"]
 bw = 0.2
-# Determine the number of attributes directly from the shape of the principal components
+
+# Determine the number of attributes (features) directly from the shape of the principal components
 num_attributes = pca.components_.shape[1]
 r = np.arange(1, num_attributes + 1)
-# The actual plot
+
+# Plot the coefficients of the first three principal components
 for i, pc_index in enumerate(pcs):
     plt.bar(r + i * bw, pca.components_[pc_index], width=bw, color=c[i], label=legendStrs[i])
+
 plt.xlabel("Attributes")
 plt.ylabel("Component coefficients")
 plt.legend()
 plt.grid()
 plt.title("PCA Component Coefficients")
+
+# Set fontsize and rotation for x-axis labels
+plt.xticks(r + bw, pc_df2.columns, rotation=45, fontsize=8)
+
 plt.show()
-#plt.savefig("projections_first_three.png")
+plt.savefig("projections_first_three.png")
 
 # Plot the covariance matrix (Σ)
 cov_matrix = np.cov(scaled_data, rowvar=False)
 plt.figure(figsize=(10, 8))
 sns.heatmap(cov_matrix, annot=True, fmt=".2f", cmap="coolwarm", square=True)
 plt.title("Covariance Matrix")
-plt.show()
+#plt.show()
 #plt.savefig("covariance_matrix.png")
